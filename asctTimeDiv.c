@@ -16,25 +16,25 @@ typedef struct _asctTimeDiv
 {
 	t_object    ob;			// the object itself (must be first)
     long        sel[3];
-    uint8       changeFlag;
+    t_int8       changeFlag;
     long        out[3];
     long        outOld[3];
     void        *m_outlet1;        //the outlet
     
     int numVals;
-    sint16      valuelist[22];
+    t_int16      valuelist[22];
     
 } t_asctTimeDiv;
 
 ///////////////////////// function prototypes
 //// standard set
-void *asctTimeDiv_new(t_symbol *s, long argc, t_atom *argv);
-void asctTimeDiv_free(t_asctTimeDiv *x);
-void asctTimeDiv_assist(t_asctTimeDiv *x, void *b, long m, long a, char *s);
-void asctTimeDiv_int(t_asctTimeDiv *x, long n);
-void asctTimeDiv_float(t_asctTimeDiv *x, double f);
-void asctTimeDiv_list(t_asctTimeDiv *x, t_symbol *s, long argc, t_atom *argv);
-void asctTimeDiv_default(t_asctTimeDiv *x);
+void *asctTimeDiv_new(t_symbol* s, long argc, t_atom* argv);
+void asctTimeDiv_free(t_asctTimeDiv* x);
+void asctTimeDiv_assist(t_asctTimeDiv* x, void* b, long m, long a, char *s);
+void asctTimeDiv_int(t_asctTimeDiv* x, long n);
+void asctTimeDiv_float(t_asctTimeDiv* x, double f);
+void asctTimeDiv_list(t_asctTimeDiv* x, t_symbol* s, long argc, t_atom* argv);
+void asctTimeDiv_default(t_asctTimeDiv* x);
 
 //////////////////////// global class pointer variable
 void *asctTimeDiv_class;
@@ -64,9 +64,10 @@ void asctTimeDiv_list(t_asctTimeDiv *x, t_symbol *s, long argc, t_atom *argv)
     if (strncmp (s->s_name,"time",4) == 0)
     {
         
-        uint8 i; //note that i is deliberately OUT of the scope of the loop
-        t_atom *ap;
-        sint16 timedivs[22];
+        t_uint8 i; //note that i is deliberately OUT of the scope of the loop
+        t_atom* ap;
+        t_int16 timedivs[22];
+		int a = 0;
         //calloc(timedivs, sizeof(sint16)*22);
         timedivs[0] = -1;//the first is always do nothing
         
@@ -127,7 +128,7 @@ void asctTimeDiv_list(t_asctTimeDiv *x, t_symbol *s, long argc, t_atom *argv)
             }
         }
         //once we have the atoms shove them into the value list, blank out the rest
-        for (int a = 0; a<22; a++) {
+        for (a = 0; a<22; a++) {
             if (a < i+1) {
                 x->valuelist[a] = timedivs[a];
             } else {
@@ -139,11 +140,12 @@ void asctTimeDiv_list(t_asctTimeDiv *x, t_symbol *s, long argc, t_atom *argv)
     }
 }
 
-void asctTimeDiv_default(t_asctTimeDiv *x)
+void asctTimeDiv_default(t_asctTimeDiv* x)
 {
-    static sint16 timedivs[22] = {-1,2880,1920,1280,1440,960,640,720,480,320,360,240,160,180,120,80,90,60,40,45,30,15};
+    static t_int16 timedivs[22] = {-1,2880,1920,1280,1440,960,640,720,480,320,360,240,160,180,120,80,90,60,40,45,30,15};
+	int i = 0;
 
-    for (int i = 0; i<22; i++) {
+    for (i = 0; i<22; i++) {
         x->valuelist[i] = timedivs[i];
         post("%i",x->valuelist[i]);
     }
@@ -196,14 +198,14 @@ void asctTimeDiv_int(t_asctTimeDiv *x,long n)
 void asctTimeDiv_float(t_asctTimeDiv *x, double f)
 {
     double temp = 0;
-    uint8 i =0;
-    uint8 suppressFlag = 0;
+    t_uint8 i =0;
+    t_uint8 suppressFlag = 0;
     
     //copy the current outs to the old array
     for(i=3;i--;)
         x->outOld[i] = x->out[i];
     
-    for (int i = 0; i < 3;i++) {
+    for (i = 0; i < 3;i++) {
         if (x->sel[i] != -1 && x->sel[i] != 0) {
             x->out[i] = f/x->sel[i];
         } else {
